@@ -90,13 +90,25 @@ final class OderCommunication {
         ?>
         <form class="comment-field-area" action="" method="POST">
             <div class="form-group">
-                <textarea class="form-control" id="hub_comment_field" rows="3"></textarea>
+                <textarea class="form-control" id="hub_comment_field" name="agent_replies" rows="3"></textarea>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary mb-2">Reply</button>
+                <button type="submit" name="create_reply" class="btn btn-primary mb-2">Reply</button>
             </div>
         </form>
         <?php
+        if(isset($_POST['create_reply'])){
+            $comments = $_POST['agent_replies'];
+            $comment_id = wp_insert_post(
+                array(
+                    'post_title'=>$attributes['order_id'],
+                    'post_type'=>'order_communication',
+                    'post_content'=> $comments,
+                    'post_status'  => 'publish',
+                    )
+            );
+        }
+        
         return ob_get_clean();
     }
 
