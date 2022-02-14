@@ -1,0 +1,12 @@
+.form-group{
+    margin-top: 10px;
+}
+
+.comment-field-area button{
+    background-color:#AA4098;
+    border: none;
+}
+.comment-field-area button:hover{
+    background-color:gray;
+    border: none;
+}
