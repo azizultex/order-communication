@@ -1,3 +1,6 @@
+html {
+    scroll-behavior: smooth;
+}
 .form-group{
     margin-top: 10px;
 }
@@ -10,10 +13,11 @@
     background-color:gray;
     border: none;
 }
-.conversation_single{
+.replied_by{
     display: flex;
+    position: absolute;
 }
-.conversation_single img{
+.replied_by img{
     max-width: 100%;
     height: 50px;
 }
@@ -22,4 +26,16 @@
     left: auto;
     min-width: 24rem;
     padding-left: 10px;
+}
+.comment_date{
+    font-size: 13px;
+}
+.agent_reply_time .agent_name{
+    font-weight: 500;
+    font-size: 15px;
+    margin-right: 10px;
+}
+.replied_content{
+    padding-top: 21px;
+    padding-left: 52px;
 }
