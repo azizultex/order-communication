@@ -13,4 +13,20 @@
 		  onDataRequestCompleteCallback.call(this, data);
 		}
 	});
+    $('.save_notification_count').on('click', function (e) {
+        e.preventDefault();
+        console.log(hub_obj.ajaxurl);
+        
+		$.ajax({
+			type: "POST",
+			url: hub_obj.ajaxurl,
+			data: {
+				action: 'reset_notification_count'
+			},
+			success: function(msg){
+				console.log(msg);
+				$('.notification_number').html(0);
+			}
+		});
+    })
 })( jQuery );

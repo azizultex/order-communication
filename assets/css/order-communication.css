@@ -10,3 +10,16 @@
     background-color:gray;
     border: none;
 }
+.conversation_single{
+    display: flex;
+}
+.conversation_single img{
+    max-width: 100%;
+    height: 50px;
+}
+#order_notification_list:not(last-child){
+    right: 0px;
+    left: auto;
+    min-width: 24rem;
+    padding-left: 10px;
+}

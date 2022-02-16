@@ -37,6 +37,7 @@ final class OderCommunication {
     public function __construct(){
         add_shortcode( 'order-comment-field', [$this, 'order_details_comment_field'] );
         add_action('wp_enqueue_scripts', [$this, 'enqueueing_scripts_file']);
+        add_action('wp_ajax_reset_notification_count', [$this, 'reset_notification_count']);
     }
     /**
      * init function for single tone approach
@@ -83,20 +84,52 @@ final class OderCommunication {
      */
     public function order_details_comment_field($atts){
         $attributes = shortcode_atts( array(
-            'order_id' => false
+            'order_id' => false,
+            'post_id' => false
         ), $atts );
 
         ob_start();
         ?>
         <form class="comment-field-area" action="" method="POST">
             <div class="form-group">
-                <textarea class="form-control" id="hub_comment_field" name="agent_replies" rows="3"></textarea>
+                <textarea class="form-control" id="hub_comment_field" name="agent_replies" rows="3" required></textarea>
             </div>
             <div class="form-group">
                 <button type="submit" name="create_reply" class="btn btn-primary mb-2">Reply</button>
             </div>
         </form>
         <?php
+        $args = array(
+            'posts_per_page' => -1,
+            'post_type' => 'order_communication',
+            'meta_query' => array(
+                array(
+                    'key'     => 'order_id',
+                    'value'   => $attributes['order_id'],
+                    'compare' => 'LIKE',
+                ),
+            ),
+        );
+        $query = new WP_Query($args);
+        if ( $query->have_posts() ) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $agent_replied = get_post_meta(get_the_ID(), 'agent_replied', true);
+                ?>
+                <div class="coversation_timeline">
+                    <div class="conversation_single">
+                        <img src="<?php echo get_avatar_url($agent_replied) ?>" >
+                        <?php the_content(); ?>
+                    </div>
+                </div>
+                <hr>
+                <?php
+                $mentioned_user = get_post_meta(get_the_ID(), 'mentioned_user', true);
+                $author_obj = get_user_by('login', $mentioned_user[0]);
+                $notification_count = !empty(get_user_meta($author_obj->data->ID, 'notification_count'))? get_user_meta($author_obj->data->ID, 'notification_count'): 0;
+                //write_log($author_obj->data->ID);
+            }
+        }
         if(isset($_POST['create_reply'])){
             $comments = $_POST['agent_replies'];
             $comment_id = wp_insert_post(
@@ -107,9 +140,20 @@ final class OderCommunication {
                     'post_status'  => 'publish',
                     )
             );
+            $users_wp = preg_match_all('/data-item-id="(.*?)"/', stripslashes($comments), $matches);
+            add_post_meta($comment_id, 'order_id', $attributes['order_id']);
+            add_post_meta($comment_id, 'mentioned_user', $matches[1]);
+            add_post_meta($comment_id, 'agent_replied', get_current_user_id());
+            add_post_meta($comment_id, 'post_id', $attributes['post_id']);
+            $author_obj = get_user_by('login', $matches[1][0]);
+            $notification_count = !empty(get_user_meta($author_obj->data->ID, 'notification_count')) || get_user_meta($author_obj->data->ID, 'notification_count') == 0 ? get_user_meta($author_obj->data->ID, 'notification_count'): 1;
+            update_user_meta($author_obj->data->ID, 'notification_count', $notification_count);
         }
-        
         return ob_get_clean();
+    }
+
+    public function reset_notification_count(){
+        update_user_meta(get_current_user_id() ,'notification_count', "0");
     }
 
 }
