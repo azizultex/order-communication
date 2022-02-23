@@ -100,7 +100,7 @@ final class OderCommunication {
             <div class="form-group">
                 <textarea class="form-control" id="hub_comment_field" name="agent_replies" rows="3" required></textarea>
             </div>
-            <div class="form-group">
+            <div class="form-group button-group">
                 <button type="submit" name="create_reply" class="btn btn-primary mb-2">Reply</button>
             </div>
         </form>
@@ -116,14 +116,22 @@ final class OderCommunication {
                     )
             );
             $users_wp = preg_match_all('/data-item-id="(.*?)"/', stripslashes($comments), $matches);
+
+            $resultEmpty = array_filter(array_map('array_filter', $matches));
+            if(!empty($resultEmpty)):
+                write_log($resultEmpty);
+                add_post_meta($comment_id, 'mentioned_user', $matches[1]);
+                $author_obj = get_user_by('login', $matches[1][0]);
+                $notification_count = get_user_meta($author_obj->data->ID, 'notification_count');
+                $notification_count[0] += 1;
+                update_user_meta($author_obj->data->ID, 'notification_count', $notification_count[0]);
+            endif;
             add_post_meta($comment_id, 'order_id', intval($attributes['order_id']));
-            add_post_meta($comment_id, 'mentioned_user', $matches[1]);
+            
             add_post_meta($comment_id, 'agent_replied', get_current_user_id());
             add_post_meta($comment_id, 'post_id', intval($attributes['post_id']));
-            $author_obj = get_user_by('login', $matches[1][0]);
-            $notification_count = get_user_meta($author_obj->data->ID, 'notification_count');
-            $notification_count[0] += 1;
-            update_user_meta($author_obj->data->ID, 'notification_count', $notification_count[0]);
+            
+            
         }
         
         $args = array(
@@ -162,9 +170,6 @@ final class OderCommunication {
                 </div>
                 <hr>
                 <?php
-                $mentioned_user = get_post_meta(get_the_ID(), 'mentioned_user', true);
-                $author_obj = get_user_by('login', $mentioned_user[0]);
-                $notification_count = !empty(get_user_meta($author_obj->data->ID, 'notification_count'))? get_user_meta($author_obj->data->ID, 'notification_count'): 0;
             }
         }
         return ob_get_clean();

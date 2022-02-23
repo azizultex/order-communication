@@ -39,13 +39,21 @@ html {
     padding-top: 21px;
     padding-left: 52px;
 }
-.show_color{
-    color: #AA4098 !important;
+.badge {
+    line-height: inherit !important;
+    background-color: #AA4098 !important;
+    width: 22px !important;
+    height: 22px !important;
+    color: #ffffff !important;
+    border-radius: 100% !important;
 }
-.scroll_infinite{
-    border: 1px solid grey;
-	width: 50%;
-	max-height: 200px;
-	min-height: 100px;
-	margin: 50px auto;
+
+.mentiony-container {
+    border: 1px solid #f3f3f3 !important;
+    border-radius: 25px !important;
+    background-color: #f3f3f3 !important;
+}
+.button-group{
+    display: flex;
+    justify-content: end;
 }
