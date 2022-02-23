@@ -31,8 +31,9 @@ defined( 'ORDER_COMMUNICATION_ROOT_PATH' ) or define( 'ORDER_COMMUNICATION_ROOT_
 defined( 'ORDER_COMMUNICATION_ROOT_URL' ) or define( 'ORDER_COMMUNICATION_ROOT_URL', plugin_dir_url( __FILE__ ) );
 
 final class OderCommunication {
+
     /**
-     * Undocumented function
+     * Class construct file
      */
     public function __construct(){
         add_shortcode( 'order-comment-field', [$this, 'order_details_comment_field'] );
@@ -52,6 +53,11 @@ final class OderCommunication {
         return $instance;
     }
 
+    /**
+     * Enqueing style and script file
+     *
+     * @return void
+     */
     public function enqueueing_scripts_file(){
         wp_enqueue_style( 'mentiony', ORDER_COMMUNICATION_ROOT_URL.'assets/css/jquery.mentiony.css', array(), time());
         wp_enqueue_style( 'order-communication', ORDER_COMMUNICATION_ROOT_URL.'assets/css/order-communication.css', array(), time());
@@ -159,12 +165,16 @@ final class OderCommunication {
                 $mentioned_user = get_post_meta(get_the_ID(), 'mentioned_user', true);
                 $author_obj = get_user_by('login', $mentioned_user[0]);
                 $notification_count = !empty(get_user_meta($author_obj->data->ID, 'notification_count'))? get_user_meta($author_obj->data->ID, 'notification_count'): 0;
-                //write_log($author_obj->data->ID);
             }
         }
         return ob_get_clean();
     }
 
+    /**
+     * Reset notification number when click on notification icon
+     *
+     * @return void
+     */
     public function reset_notification_count(){
         update_user_meta(get_current_user_id() ,'notification_count', "0");
     }

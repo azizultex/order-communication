@@ -1,5 +1,4 @@
 (function($) {
-    console.log(hub_obj);
     $('#hub_comment_field').mentiony({
 		onDataRequest: function (mode, keyword, onDataRequestCompleteCallback) {
 	  
@@ -15,8 +14,6 @@
 	});
     $('.save_notification_count').on('click', function (e) {
         e.preventDefault();
-        console.log(hub_obj.ajaxurl);
-        
 		$.ajax({
 			type: "POST",
 			url: hub_obj.ajaxurl,
@@ -24,7 +21,6 @@
 				action: 'reset_notification_count'
 			},
 			success: function(msg){
-				console.log(msg);
 				$('.notification_number').html(0);
 			}
 		});
