@@ -94,7 +94,7 @@ final class OderCommunication {
             <div class="form-group">
                 <textarea class="form-control" id="hub_comment_field" name="agent_replies" rows="3" required></textarea>
             </div>
-            <div class="form-group">
+            <div class="form-group button-group">
                 <button type="submit" name="create_reply" class="btn btn-primary mb-2">Reply</button>
             </div>
         </form>
