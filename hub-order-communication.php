@@ -122,7 +122,8 @@ final class OderCommunication {
                 write_log($resultEmpty);
                 add_post_meta($comment_id, 'mentioned_user', $matches[1]);
                 $author_obj = get_user_by('login', $matches[1][0]);
-                $notification_count = get_user_meta($author_obj->data->ID, 'notification_count');
+                $notification_count_meta = get_user_meta($author_obj->data->ID, 'notification_count');
+                $notification_count = isset( $notification_count_meta) ? $notification_count_meta: array(0 => '0') ;
                 $notification_count[0] += 1;
                 update_user_meta($author_obj->data->ID, 'notification_count', $notification_count[0]);
             endif;
