@@ -17,21 +17,21 @@
  * Text Domain:       order-communication
  * Domain Path:       /languages
  */
-​
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
     die;
 }
-​
-​
+
+
 defined( 'ORDER_COMMUNICATION_PLUGIN_NAME' ) or define( 'ORDER_COMMUNICATION_PLUGIN_NAME', 'Order Communication' );
 defined( 'ORDER_COMMUNICATION_PLUGIN_VERSION' ) or define( 'ORDER_COMMUNICATION_PLUGIN_VERSION', '1.0.0' );
 defined( 'ORDER_COMMUNICATION_BASE_NAME' ) or define( 'ORDER_COMMUNICATION_BASE_NAME', plugin_basename( __FILE__ ) );
 defined( 'ORDER_COMMUNICATION_ROOT_PATH' ) or define( 'ORDER_COMMUNICATION_ROOT_PATH', plugin_dir_path( __FILE__ ) );
 defined( 'ORDER_COMMUNICATION_ROOT_URL' ) or define( 'ORDER_COMMUNICATION_ROOT_URL', plugin_dir_url( __FILE__ ) );
-​
+
 final class OderCommunication {
-​
+
     /**
      * Class construct file
      */
@@ -52,7 +52,7 @@ final class OderCommunication {
         }
         return $instance;
     }
-​
+
     /**
      * Enqueing style and script file
      *
@@ -74,14 +74,14 @@ final class OderCommunication {
             $new_array['href'] = '#';
             $users_array[] = $new_array;
         }
-​
+
         $obj_data = array(
         'ajaxurl' => admin_url('admin-ajax.php'),
         'users_array' => $users_array
         );
         wp_localize_script('order-communication-js', 'hub_obj', $obj_data);
     }
-​
+
     /**
      * Adding shortcode contents for order detials comnment section
      *
@@ -93,7 +93,7 @@ final class OderCommunication {
             'order_id' => false,
             'post_id' => false
         ), $atts );
-​
+
         ob_start();
         ?>
         <form class="comment-field-area" action="" method="POST">
@@ -119,7 +119,7 @@ final class OderCommunication {
                         )
                 );
             }
-​
+
             $meta_data = new \stdClass();
             $meta_data->comment = stripslashes(str_replace('"', "'", $comments));
             $users_wp = preg_match_all('/data-item-id="(.*?)"/', stripslashes($comments), $matches);
@@ -128,11 +128,11 @@ final class OderCommunication {
                 write_log($resultEmpty);
                 $meta_data->mentioned_user = $matches[1];
                 $author_obj = get_user_by('login', $matches[1][0]);
-​
+
                 $notification_count = get_user_meta($author_obj->data->ID, 'notification_count', true);
                 $notification_count += 1;
                 update_user_meta($author_obj->data->ID, 'notification_count', $notification_count);
-​
+
                 $mentioned_order_ids = get_user_meta($author_obj->data->ID, 'mentioned_order_ids', true);
                 $mentioned_order_ids = json_decode($mentioned_order_ids);
                 if(!empty($mentioned_order_ids) && $mentioned_order_ids != ''){
@@ -141,7 +141,7 @@ final class OderCommunication {
                     $mentioned_order_ids[] = $attributes['order_id']; 
                 }
                 update_user_meta($author_obj->data->ID, 'mentioned_order_ids', json_encode($mentioned_order_ids));
-​
+
                 $mentioned_comment_ids = get_user_meta($author_obj->data->ID, 'mentioned_comment_ids', true);
                 $mentioned_comment_ids = json_decode($mentioned_comment_ids);
                 if(!empty($mentioned_comment_ids) && $mentioned_comment_ids != ''){
@@ -150,14 +150,14 @@ final class OderCommunication {
                     $mentioned_comment_ids[] = $comment_id; 
                 }
                 update_user_meta($author_obj->data->ID, 'mentioned_comment_ids', json_encode($mentioned_comment_ids));
-​
+
             endif;
             $meta_data->agent_replied = get_current_user_id();
-​
+
             $history = new \stdClass();
             $history->name = 'Sent On: ';
             $meta_data->time = date('Y-m-d H:i:s', time());
-​
+
             $mentioned_user_meta_data = get_post_meta($comment_id, 'mentioned_user_meta_data', true);
             $mentioned_user_meta_data = json_decode($mentioned_user_meta_data);
             if(!empty($mentioned_user_meta_data) && $mentioned_user_meta_data != ''){
@@ -167,13 +167,13 @@ final class OderCommunication {
             }
             $mentioned_user_meta_data = array_values($mentioned_user_meta_data);
             update_post_meta($comment_id, 'mentioned_user_meta_data', json_encode($mentioned_user_meta_data));
-​
+
         }
-​
+
         $comment_post = get_page_by_title( $attributes['order_id'], OBJECT, 'order_communication' );
         if($comment_post){
             $comment_id = $comment_post->ID;
-​
+
             $mentioned_user_meta_data = get_post_meta($comment_id, 'mentioned_user_meta_data', true);
             $mentioned_user_meta_data = json_decode(trim($mentioned_user_meta_data), true);
             // echo '<pre>';
@@ -206,7 +206,7 @@ final class OderCommunication {
         }
         return ob_get_clean();
     }
-​
+
     /**
      * Reset notification number when click on notification icon
      *
@@ -215,9 +215,9 @@ final class OderCommunication {
     public function reset_notification_count(){
         update_user_meta(get_current_user_id() ,'notification_count', "0");
     }
-​
+
 }
-​
+
 /**
  * initialise the main function
  *
@@ -227,6 +227,6 @@ function order_communication()
 {
     return OderCommunication::init();
 }
-​
+
 // let's start the plugin
 order_communication();
